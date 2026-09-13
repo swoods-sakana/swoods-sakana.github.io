@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5-DOF Robotic Arm - Sam Woods</title>
+<meta name="description" content="A custom ESP32 servo breakout board and a 3D-printed, SolidWorks-modeled mechanical structure for a 5 degree-of-freedom robotic arm.">
+<meta property="og:title" content="5-DOF Robotic Arm - Sam Woods">
+<meta property="og:description" content="A custom ESP32 servo breakout board and a 3D-printed mechanical structure for a 5 degree-of-freedom robotic arm.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..700&family=Azeret+Mono:wght@400..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<script>document.documentElement.className += " js";</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="shell nav__inner">
+    <a class="nav__mark" href="index.html">Sam Woods</a>
+    <nav aria-label="Sections">
+      <ul class="nav__links">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#experience">Experience</a></li>
+        <li><a href="index.html#projects">Projects</a></li>
+        <li><a href="index.html#education">Education</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="shell">
+
+  <a class="back" href="index.html#projects">
+    <span class="arrow" aria-hidden="true">←</span> All work
+  </a>
+
+  <div class="page-head">
+    <h1 class="page-head__title">5-DOF Robotic Arm</h1>
+    <p class="page-head__meta">
+      Personal project <span class="sep">/</span> In progress
+    </p>
+
+    <ul class="entry__tags">
+      <li>KiCAD</li>
+      <li>SolidWorks</li>
+      <li>Arduino</li>
+    </ul>
+
+    <div class="page-head__rule"></div>
+  </div>
+
+  <article class="doc">
+
+    <section class="doc__section">
+      <h2 class="doc__heading">Overview</h2>
+      <div class="prose">
+        <p>
+          A personal project to build a 5 degree-of-freedom robotic arm,
+          covering the electronics, the mechanical structure, and the control
+          software. It's an active project, so this page covers what's built
+          so far.
+        </p>
+      </div>
+    </section>
+
+    <section class="doc__section">
+      <h2 class="doc__heading">Servo Breakout Board</h2>
+      <div class="prose">
+        <p>
+          The arm is actuated by six MG996R servos. Rather than wire each one
+          directly to a microcontroller, I designed a custom breakout board in
+          KiCad that sits on an ESP32 and handles signal and power routing for
+          all six from a single connector layout.
+        </p>
+      </div>
+
+      <ul class="speclist">
+        <li>
+          Designed the board around an ESP32, consolidating six sets of servo
+          wiring onto one board.
+        </li>
+        <li>
+          Took the design through three revisions in KiCad, refining
+          connector placement and routing with each pass.
+        </li>
+        <li>
+          Ordered the third revision for fabrication.
+        </li>
+      </ul>
+
+      <div class="plates">
+        <figure class="plate">
+          <img src="assets/img/board.png"
+               alt="KiCad layout of the ESP32 servo breakout board"
+               loading="lazy" width="800" height="600">
+          <figcaption>
+            The third revision of the servo breakout board, laid out in KiCad.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="doc__section">
+      <h2 class="doc__heading">Mechanical Structure</h2>
+      <div class="prose">
+        <p>
+          In parallel, I've been modeling the arm in SolidWorks and
+          3D-printing sections of it to test fit, range of motion, and how the
+          servos mount and load each joint. A good portion of the arm is
+          modeled, with several joints already prototyped in print.
+        </p>
+      </div>
+
+      <div class="plates">
+        <figure class="plate">
+          <img src="assets/img/arm.png"
+               alt="SolidWorks model of the shoulder and elbow joints"
+               loading="lazy" width="800" height="600">
+          <figcaption>
+            The first two joints (shoulder and elbow), modeled in SolidWorks.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="doc__section">
+      <h2 class="doc__heading">Control Code</h2>
+      <div class="prose">
+        <p>
+          On the software side, I've written Arduino firmware to drive
+          individual servos from the breakout board, plus a small Python
+          script that handles serial communication between a computer and the
+          ESP32 for sending commands and reading status back.
+        </p>
+      </div>
+    </section>
+
+  </article>
+
+  <div class="next-up">
+    <p class="next-up__label">Next</p>
+    <a class="next-up__link" href="claw.html">
+      The Claw <span class="arrow" aria-hidden="true">→</span>
+    </a>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div class="shell footer__inner">
+    <p><strong>Sam Woods</strong> - Engineering Physics Student</p>
+    <p>Vancouver, BC</p>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

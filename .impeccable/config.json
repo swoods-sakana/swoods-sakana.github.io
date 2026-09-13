@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "em-dash-overuse",
+        "value": "*",
+        "files": [
+          "sailbot.html"
+        ],
+        "createdAt": "2026-09-12T00:17:44.571Z",
+        "reason": "body copy is the owner's own verbatim writing from portfolio-content-handoff.md, named in PRODUCT.md as the content source of record; rewriting his prose is not mine to do unasked"
+      },
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "*.html"
+        ],
+        "createdAt": "2026-09-12T00:17:57.240Z",
+        "reason": "user confirmed: asked for 'a small, lowkey amount of theming around engineering or physics (just in the background, or as details on certain elements)'; pinned in the surface brief OWN-WORLD block at 3-5% contrast"
+      }
+    ]
+  }
+}

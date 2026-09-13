@@ -1,0 +1,934 @@
+/* ==========================================================================
+   Sam Woods — Engineering Physics portfolio
+   Shared stylesheet for index.html and the detail pages.
+
+   Editing notes for future-you:
+   - Colours, type sizes and spacing all come from the custom properties in
+     :root below. Change them there, not further down.
+   - Mono type (Azeret Mono) is reserved for data: dates, course codes,
+     tool tags and contact keys. Don't use it for headings or body copy;
+     keeping it to data is what stops it reading as decoration.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Tokens
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Surface — cool paper, never cream, never pure white */
+  --paper:        #f6f7f9;
+  --paper-raised: #ffffff;
+  --paper-sunk:   #eef1f4;
+
+  /* Ink — cool near-black, with secondary tones tinted from the same hue */
+  --ink:    #14181d;
+  --ink-2:  #454d57;
+  --ink-3:  #5b646e; /* AA-safe for small text on --paper and on white */
+
+  /* Hairlines */
+  --rule:      #d6dbe1;
+  --rule-soft: #e5e9ed;
+  --tick:      #9aa4ae;
+
+  /* The single accent. Actions and live values only. */
+  --accent:       #0b5ca8;
+  --accent-deep:  #08477f;
+  --accent-wash:  #e4edf6;
+
+  /* Engineering grid, sitting behind everything at 3–5% contrast */
+  --grid-minor: rgba(20, 24, 29, 0.022);
+  --grid-major: rgba(20, 24, 29, 0.045);
+
+  /* Type */
+  --font-sans: "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Azeret Mono", ui-monospace, "SFMono-Regular", "Consolas", monospace;
+
+  --step--1: clamp(0.78rem, 0.76rem + 0.10vw, 0.84rem);
+  --step-0:  clamp(1.00rem, 0.97rem + 0.15vw, 1.09rem);
+  --step-1:  clamp(1.15rem, 1.09rem + 0.30vw, 1.33rem);
+  --step-2:  clamp(1.40rem, 1.28rem + 0.55vw, 1.75rem);
+  --step-3:  clamp(1.75rem, 1.52rem + 1.05vw, 2.45rem);
+  --step-4:  clamp(2.45rem, 1.85rem + 2.90vw, 4.40rem);
+
+  /* Spacing — 4px base */
+  --s-1:  0.25rem;
+  --s-2:  0.5rem;
+  --s-3:  0.75rem;
+  --s-4:  1rem;
+  --s-5:  1.5rem;
+  --s-6:  2rem;
+  --s-7:  3rem;
+  --s-8:  4rem;
+  --s-9:  6rem;
+
+  --measure: 68ch;
+  /* Detail-page reading column. Fixed in rem so prose, spec lists and
+     callouts share one left column regardless of their font size — a ch
+     measure silently gives each block a different width. */
+  --doc-col: 44rem;
+  --shell:   72rem;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------------------
+   2. Reset and base
+   -------------------------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem; /* clears the sticky nav on anchor jumps */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(to right,  var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(to right,  var(--grid-major) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-major) 1px, transparent 1px);
+  background-size: 10px 10px, 10px 10px, 100px 100px, 100px 100px;
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden; /* safety net: nothing should overflow, but never clip a section */
+}
+
+/* A fixed background repaints on every scroll frame on touch devices. */
+@media (max-width: 40rem) {
+  body { background-attachment: scroll; }
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+p { margin: 0; }
+p + p { margin-top: var(--s-4); }
+
+ul { margin: 0; padding: 0; }
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* --------------------------------------------------------------------------
+   3. Browser surfaces — the parts we didn't draw still carry the design
+   -------------------------------------------------------------------------- */
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+:root {
+  caret-color: var(--accent);
+  scrollbar-color: var(--tick) transparent;
+  scrollbar-width: thin;
+  accent-color: var(--accent);
+}
+
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: var(--paper-sunk); }
+::-webkit-scrollbar-thumb {
+  background: var(--tick);
+  border: 3px solid var(--paper-sunk);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ink-3); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  transition: text-decoration-color 140ms var(--ease-out), color 140ms var(--ease-out);
+}
+
+a:hover {
+  color: var(--accent-deep);
+  text-decoration-color: currentColor;
+}
+
+/* --------------------------------------------------------------------------
+   4. Layout primitives
+   -------------------------------------------------------------------------- */
+
+.shell {
+  width: min(100% - 2.5rem, var(--shell));
+  margin-inline: auto;
+}
+
+@media (max-width: 40rem) {
+  .shell { width: min(100% - 1.75rem, var(--shell)); }
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--s-4);
+  top: var(--s-4);
+  z-index: 100;
+  padding: var(--s-2) var(--s-4);
+  background: var(--ink);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 2px;
+  transform: translateY(-300%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* Stays white on the dark chip; the global a:hover colour would fail here. */
+.skip-link,
+.skip-link:hover,
+.skip-link:focus-visible { color: #fff; }
+
+/* Measured prose */
+.prose { max-width: var(--measure); }
+
+/* --------------------------------------------------------------------------
+   6. Navigation
+   -------------------------------------------------------------------------- */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  min-height: 4rem;
+}
+
+.nav__inner > nav {
+  margin-left: auto;
+  min-width: 0; /* lets the link row shrink instead of widening the document */
+}
+
+.nav__mark {
+  font-weight: 700;
+  font-stretch: 112%;
+  letter-spacing: 0.01em;
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav__mark:hover { color: var(--ink); }
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  margin-left: auto;
+  list-style: none;
+  font-size: var(--step--1);
+}
+
+.nav__links a {
+  color: var(--ink-2);
+  text-decoration: none;
+  padding-top: var(--s-2);
+  padding-bottom: var(--s-2);
+  border-bottom: 1px solid transparent;
+}
+
+.nav__links a:hover {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+@media (max-width: 52rem) {
+  .nav__links { gap: var(--s-4); }
+}
+
+/* Below this the mark and the links can't share a row without forcing the
+   document wider than the viewport, which clips every section on the right.
+   Stack them instead and keep all five links reachable. */
+@media (max-width: 34rem) {
+  .nav__inner {
+    flex-wrap: wrap;
+    gap: 0;
+    padding-top: var(--s-3);
+    padding-bottom: var(--s-2);
+    min-height: 0;
+  }
+  .nav__inner > nav {
+    margin-left: 0;
+    width: 100%;
+    min-width: 0;
+  }
+  .nav__links {
+    justify-content: space-between;
+    gap: var(--s-2);
+    font-size: 0.72rem;
+  }
+  .nav__links a { padding-top: var(--s-1); }
+}
+
+/* --------------------------------------------------------------------------
+   7. Hero
+   -------------------------------------------------------------------------- */
+
+.hero {
+  padding-block: clamp(3.5rem, 2rem + 6vw, 7rem) var(--s-8);
+}
+
+.hero__name {
+  font-size: var(--step-4);
+  font-weight: 700;
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+}
+
+/* The one authored motion moment: a rule struck under the nameplate,
+   and again under each section heading as it comes into view. */
+.hero__rule {
+  height: 2px;
+  background: var(--ink);
+  margin-top: var(--s-5);
+  transform-origin: left center;
+}
+
+.hero__lede {
+  margin-top: var(--s-5);
+  max-width: 54ch;
+  font-size: var(--step-1);
+  line-height: 1.5;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin-top: var(--s-6);
+}
+
+/* Three actions of equal weight — none is styled as the primary */
+.action {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-5);
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  font-size: var(--step-0);
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 150ms var(--ease-out),
+              background-color 150ms var(--ease-out),
+              color 150ms var(--ease-out);
+}
+
+.action:hover {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+  color: var(--accent-deep);
+}
+
+.action__meta {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--ink-3);
+  letter-spacing: 0.01em;
+}
+
+.action:hover .action__meta { color: var(--accent); }
+
+/* --------------------------------------------------------------------------
+   8. Sections
+   -------------------------------------------------------------------------- */
+
+.section {
+  padding-block: var(--s-8);
+}
+
+.section__head {
+  margin-bottom: var(--s-6);
+}
+
+.section__title {
+  font-size: var(--step--1);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--ink-3);
+}
+
+/* The struck rule. Sits at scaleX(0) only once JS confirms it can animate. */
+.section__rule {
+  height: 1px;
+  background: var(--rule);
+  margin-top: var(--s-3);
+  transform-origin: left center;
+}
+
+.js .section__rule,
+.js .hero__rule {
+  transform: scaleX(0);
+}
+
+.js .section__rule.is-struck,
+.js .hero__rule.is-struck {
+  transform: scaleX(1);
+  transition: transform 900ms var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .section__rule,
+  .js .hero__rule { transform: none; }
+  .js .section__rule.is-struck,
+  .js .hero__rule.is-struck { transition: none; }
+}
+
+/* --------------------------------------------------------------------------
+   9. About and skills
+   -------------------------------------------------------------------------- */
+
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: var(--s-7);
+  align-items: start;
+}
+
+@media (max-width: 52rem) {
+  .about { grid-template-columns: 1fr; gap: var(--s-6); }
+}
+
+.about__body {
+  font-size: var(--step-1);
+  line-height: 1.55;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+.skills__heading {
+  font-size: var(--step--1);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  margin-bottom: var(--s-3);
+}
+
+.skills__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  list-style: none;
+}
+
+.skills__list li {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 400;
+  padding: var(--s-1) var(--s-3);
+  color: var(--ink-2);
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+}
+
+/* --------------------------------------------------------------------------
+   10. Entries — experience and projects
+   -------------------------------------------------------------------------- */
+
+.entries {
+  list-style: none;
+  display: grid;
+  gap: var(--s-6);
+}
+
+.entry {
+  position: relative;
+  padding: var(--s-6);
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+}
+
+/* Drafting corner ticks, in place of a drop shadow */
+.entry::before,
+.entry::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
+
+.entry::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--tick);
+  border-left: 2px solid var(--tick);
+}
+
+.entry::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid var(--tick);
+  border-right: 2px solid var(--tick);
+}
+
+/* Sailbot carries more weight than the class projects — scope-matched */
+/* The lead role runs the full width, so its dates sit in their own column
+   the way a CV sets them, rather than leaving the right half empty. */
+.entry--lead {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr);
+  gap: var(--s-6);
+  padding: var(--s-7);
+}
+
+.entry__meta--side {
+  margin-top: 0.45rem;
+  line-height: 1.7;
+}
+
+.entry--lead .entry__title { font-size: var(--step-2); }
+.entry--lead .entry__body { max-width: 72ch; }
+
+/* Projects are short, so they read as a row rather than three wide, mostly
+   empty bands. auto-fit collapses to one column on small screens. */
+#projects .entries {
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: var(--s-5);
+  align-items: stretch;
+}
+
+#projects .entries > li { display: flex; }
+#projects .entries > li > .entry { width: 100%; }
+
+@media (max-width: 56rem) {
+  .entry,
+  .entry--lead { padding: var(--s-5); }
+  .entry--lead {
+    grid-template-columns: 1fr;
+    gap: var(--s-3);
+  }
+  .entry__meta--side { margin-top: 0; }
+}
+
+.entry__title {
+  font-size: var(--step-1);
+  font-weight: 600;
+}
+
+.entry__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.entry__title a:hover {
+  color: var(--accent-deep);
+  text-decoration: underline;
+}
+
+.entry__meta {
+  margin-top: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-3);
+  letter-spacing: 0.005em;
+}
+
+.entry__meta .sep {
+  color: var(--rule);
+  margin-inline: 0.5em;
+}
+
+.entry__body {
+  margin-top: var(--s-4);
+  color: var(--ink-2);
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+.entry__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-top: var(--s-5);
+  list-style: none;
+}
+
+.entry__tags li {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--ink-3);
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--rule-soft);
+  background: var(--paper);
+}
+
+.entry__more {
+  display: inline-block;
+  margin-top: var(--s-5);
+  font-weight: 500;
+  font-size: var(--step-0);
+}
+
+.entry__more .arrow {
+  display: inline-block;
+  transition: transform 180ms var(--ease-out);
+}
+
+.entry__more:hover .arrow { transform: translateX(3px); }
+
+/* --------------------------------------------------------------------------
+   11. Photo plates — sized for rough phone snapshots, and fine without them
+   -------------------------------------------------------------------------- */
+
+.plate {
+  margin: 0;
+  background: var(--paper-sunk);
+  border: 1px solid var(--rule);
+}
+
+.plate img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  filter: saturate(0.94) contrast(1.02);
+}
+
+.plate figcaption {
+  padding: var(--s-3) var(--s-4);
+  border-top: 1px solid var(--rule);
+  font-size: var(--step--1);
+  line-height: 1.4;
+  color: var(--ink-2);
+  background: var(--paper-raised);
+  text-wrap: pretty;
+}
+
+.plates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: var(--s-5);
+  margin-top: var(--s-6);
+}
+
+/* --------------------------------------------------------------------------
+   12. Education
+   -------------------------------------------------------------------------- */
+
+.education {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--s-6) var(--s-7);
+  padding: var(--s-6);
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+}
+
+@media (max-width: 52rem) {
+  .education { grid-template-columns: 1fr; padding: var(--s-5); }
+}
+
+.education__degree { font-size: var(--step-1); font-weight: 600; }
+
+.education__school {
+  margin-top: var(--s-2);
+  color: var(--ink-2);
+}
+
+.education__dates {
+  margin-top: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-3);
+}
+
+.courses { list-style: none; }
+
+.courses li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-4);
+  padding-top: var(--s-3);
+  padding-bottom: var(--s-3);
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.courses li:first-child { padding-top: 0; }
+.courses li:last-child { border-bottom: 0; }
+
+.courses .code {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   13. Contact and footer
+   -------------------------------------------------------------------------- */
+
+.contact__lede {
+  font-size: var(--step-2);
+  font-weight: 600;
+  max-width: 40ch;
+  letter-spacing: -0.02em;
+}
+
+.contact__list {
+  list-style: none;
+  margin-top: var(--s-6);
+  display: grid;
+  gap: 0;
+  max-width: 40rem;
+}
+
+.contact__list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-4);
+  padding-top: var(--s-4);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--rule);
+}
+
+.contact__list li:first-child { border-top: 1px solid var(--rule); }
+
+.contact__key {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+}
+
+.contact__list a {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+.footer {
+  margin-top: var(--s-8);
+  border-top: 1px solid var(--rule);
+  padding-block: var(--s-6) var(--s-7);
+}
+
+.footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--s-3);
+  font-size: var(--step--1);
+  color: var(--ink-3);
+}
+
+.footer strong {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   14. Detail pages
+   -------------------------------------------------------------------------- */
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-7);
+  font-size: var(--step--1);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.back:hover { text-decoration: underline; }
+
+.back .arrow {
+  display: inline-block;
+  transition: transform 180ms var(--ease-out);
+}
+
+.back:hover .arrow { transform: translateX(-3px); }
+
+.page-head {
+  padding-block: var(--s-6) var(--s-7);
+}
+
+.page-head__title {
+  font-size: var(--step-3);
+  font-weight: 700;
+  font-stretch: 112%;
+  letter-spacing: -0.03em;
+  max-width: 22ch;
+}
+
+.page-head__meta {
+  margin-top: var(--s-4);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-3);
+}
+
+.page-head__meta .sep {
+  color: var(--rule);
+  margin-inline: 0.5em;
+}
+
+.page-head__rule {
+  height: 2px;
+  background: var(--ink);
+  margin-top: var(--s-6);
+  transform-origin: left center;
+}
+
+.js .page-head__rule { transform: scaleX(0); }
+
+.js .page-head__rule.is-struck {
+  transform: scaleX(1);
+  transition: transform 900ms var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .page-head__rule { transform: none; }
+  .js .page-head__rule.is-struck { transition: none; }
+}
+
+.doc { padding-bottom: var(--s-6); }
+
+.doc__section {
+  padding-top: var(--s-7);
+  padding-bottom: 0;
+}
+
+.doc .prose { max-width: var(--doc-col); }
+
+.doc__heading {
+  font-size: var(--step-2);
+  font-weight: 600;
+  max-width: 26ch;
+}
+
+.doc__section > * + * { margin-top: var(--s-5); }
+
+.doc p,
+.doc li {
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.doc .prose p {
+  font-size: var(--step-1);
+  line-height: 1.6;
+}
+
+/* Bullet list set as a specification list rather than a dot list */
+.speclist {
+  list-style: none;
+  max-width: var(--doc-col);
+}
+
+.speclist li {
+  position: relative;
+  padding-left: var(--s-6);
+  padding-top: var(--s-3);
+  padding-bottom: var(--s-3);
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.speclist li:last-child { border-bottom: 0; }
+
+.speclist li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1.55em;
+  width: 14px;
+  height: 1px;
+  background: var(--tick);
+}
+
+.callout {
+  margin-top: var(--s-6);
+  padding: var(--s-5) var(--s-6);
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--accent);
+  max-width: var(--doc-col);
+}
+
+.callout p { color: var(--ink); }
+
+.next-up {
+  margin-top: var(--s-7);
+  padding-top: var(--s-6);
+  border-top: 1px solid var(--rule);
+}
+
+.next-up__label {
+  font-size: var(--step--1);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--ink-3);
+}
+
+.next-up__link {
+  display: inline-block;
+  margin-top: var(--s-3);
+  font-size: var(--step-2);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.next-up__link:hover { text-decoration: underline; }
+
+.next-up__link .arrow {
+  display: inline-block;
+  transition: transform 180ms var(--ease-out);
+}
+
+.next-up__link:hover .arrow { transform: translateX(4px); }
